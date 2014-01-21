@@ -1,3 +1,6 @@
+/*jslint devel: false, browser: false, node: true, maxerr: 50, indent: 4, white: true*/
+/*global console: false, clearInterval: false, clearTimeout: false, document: false, event: false, frames: false, history: false, Image: false, location: false, name: false, navigator: false, Option: false, parent: false, screen: false, setInterval: false, setTimeout: false, window: false, XMLHttpRequest: false */
+
 /*
  * grunt-flint
  * https://github.com/bmarti44/grunt-flint
@@ -15,36 +18,26 @@ module.exports = function(grunt) {
 
   grunt.registerMultiTask('flint', 'Uses regular expressions to fail or pass files', function() {
     // Merge task-specific and/or target-specific options with these defaults.
-    var options = this.options({
-      punctuation: '.',
-      separator: ', '
+    grunt.log.writeln(JSON.stringify(this.files));
+    
+    var globs = [],
+      files,
+      i,
+      src;
+    
+    this.files.forEach(function(glob) {
+      globs.push(glob.src);
     });
-
-    // Iterate over all specified file groups.
-    this.files.forEach(function(f) {
-      // Concat specified files.
-      var src = f.src.filter(function(filepath) {
-        // Warn on and remove invalid source files (if nonull was set).
-        if (!grunt.file.exists(filepath)) {
-          grunt.log.warn('Source file "' + filepath + '" not found.');
-          return false;
-        } else {
-          return true;
-        }
-      }).map(function(filepath) {
-        // Read file source.
-        return grunt.file.read(filepath);
-      }).join(grunt.util.normalizelf(options.separator));
-
-      // Handle options.
-      src += options.punctuation;
-
-      // Write the destination file.
-      grunt.file.write(f.dest, src);
-
-      // Print a success message.
-      grunt.log.writeln('File "' + f.dest + '" created.');
-    });
+    
+    files = grunt.file.expand(globs);
+    
+    for (i = 0; i < files.length; i += 1) {
+      if (grunt.file.exists(files[i])) {
+        src = grunt.file.read(files[i]);
+        grunt.log.writeln(src);
+      }
+    }
+    
   });
 
 };

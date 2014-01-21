@@ -1,4 +1,4 @@
-/*jslint devel: false, browser: false, node: true, maxerr: 50, indent: 4, white: true*/
+/*jslint devel: false, browser: false, node: true, maxerr: 50, indent: 2, white: true*/
 /*global console: false, clearInterval: false, clearTimeout: false, document: false, event: false, frames: false, history: false, Image: false, location: false, name: false, navigator: false, Option: false, parent: false, screen: false, setInterval: false, setTimeout: false, window: false, XMLHttpRequest: false */
 
 /*
@@ -20,14 +20,15 @@ module.exports = function(grunt) {
 
   grunt.registerMultiTask('flint', 'Uses regular expressions to fail or pass files', function() {
     // Merge task-specific and/or target-specific options with these defaults.
-    grunt.log.writeln(JSON.stringify(this.files));
     
     var globs = [],
       patterns = grunt.file.readJSON('.flintrc'),
       files,
       i,
       s,
-      src;
+      x,
+      src,
+      lines;
     
     this.files.forEach(function(glob) {
       globs.push(glob.src);
@@ -36,20 +37,26 @@ module.exports = function(grunt) {
     files = grunt.file.expand(globs);
     
     for (i = 0; i < files.length; i += 1) {
+      
       if (grunt.file.exists(files[i])) {
+        
         src = grunt.file.read(files[i]);
         
         if (typeof(patterns[this.target]) !== 'undefined' && util.isArray(patterns[this.target]) && patterns[this.target].length) {
           
           for (s = 0; s < patterns[this.target].length; s += 1) {
-            if (src.match(new RegExp(patterns[this.target][i], 'i'))) {
-              grunt.log.error('Failed regular expression: ' + patterns[this.target]);
+            
+            lines = src.split(/\n/);
+            
+            for (x = 0; x < lines.length; x += 1) {
+              if (lines[x].match(new RegExp(patterns[this.target][s]))) {
+                grunt.log.error('Failed regular expression "' + patterns[this.target][s] + '" on line ' + (x + 1));
+                
+              }
             }
           }
-          
+          grunt.log.ok('File ' + files[i] + ' passed!');
         }
-        
-        grunt.log.writeln(src);
       }
     }
     

@@ -1,4 +1,4 @@
-/*jslint devel: false, browser: false, node: true, maxerr: 50, indent: 4, white: true*/
+/*jslint devel: false, browser: false, node: true, maxerr: 50, indent: 2, white: true*/
 /*global console: false, clearInterval: false, clearTimeout: false, document: false, event: false, frames: false, history: false, Image: false, location: false, name: false, navigator: false, Option: false, parent: false, screen: false, setInterval: false, setTimeout: false, window: false, XMLHttpRequest: false */
 
 /*

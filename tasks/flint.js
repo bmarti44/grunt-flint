@@ -11,6 +11,8 @@
 
 'use strict';
 
+var util = require('util');
+
 module.exports = function(grunt) {
 
   // Please see the Grunt documentation for more information regarding task
@@ -21,8 +23,10 @@ module.exports = function(grunt) {
     grunt.log.writeln(JSON.stringify(this.files));
     
     var globs = [],
+      patterns = grunt.file.readJSON('.flintrc'),
       files,
       i,
+      s,
       src;
     
     this.files.forEach(function(glob) {
@@ -34,6 +38,17 @@ module.exports = function(grunt) {
     for (i = 0; i < files.length; i += 1) {
       if (grunt.file.exists(files[i])) {
         src = grunt.file.read(files[i]);
+        
+        if (typeof(patterns[this.target]) !== 'undefined' && util.isArray(patterns[this.target]) && patterns[this.target].length) {
+          
+          for (s = 0; s < patterns[this.target].length; s += 1) {
+            if (src.match(new RegExp(patterns[this.target][i], 'i'))) {
+              grunt.log.error('Failed regular expression: ' + patterns[this.target]);
+            }
+          }
+          
+        }
+        
         grunt.log.writeln(src);
       }
     }
